@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User CRUD</title>
+</head>
+<body>
+  <h1>User CRUD</h1>
+
+  <!-- Formulario para crear un usuario -->
+  <h2>Create User</h2>
+  <form id="createUserForm">
+    <label for="email">Email:</label>
+    <input type="email" id="createEmail" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="createPassword" required>
+
+    <label for="firstName">First Name:</label>
+    <input type="text" id="createFirstName" required>
+
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="createLastName" required>
+
+    <label for="imgProfile">Profile Image:</label>
+    <input type="file" id="createImgProfile">
+
+    <button type="submit">Create User</button>
+  </form>
+  <div id="createResult"></div>
+
+  <!-- Botón para obtener todos los usuarios -->
+  <h2>Get All Users</h2>
+  <button onclick="getAllUsers()">Fetch Users</button>
+  <div id="usersList"></div>
+
+  <!-- Formulario para actualizar un usuario -->
+  <h2>Update User</h2>
+  <form id="updateUserForm">
+    <label for="userId">User ID:</label>
+    <input type="number" id="updateUserId" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="updateEmail">
+
+    <label for="firstName">First Name:</label>
+    <input type="text" id="updateFirstName">
+
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="updateLastName">
+
+    <label for="imgProfile">New Profile Image:</label>
+    <input type="file" id="updateImgProfile">
+
+    <button type="submit">Update User</button>
+  </form>
+  <div id="updateResult"></div>
+
+  <!-- Formulario para eliminar un usuario -->
+  <h2>Delete User</h2>
+  <form id="deleteUserForm">
+    <label for="deleteUserId">User ID:</label>
+    <input type="number" id="deleteUserId" required>
+
+    <button type="submit">Delete User</button>
+  </form>
+  <div id="deleteResult"></div>
+
+  <script>
+    // Función para crear un usuario
+    document.getElementById('createUserForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData();
+      formData.append('email', document.getElementById('createEmail').value);
+      formData.append('password', document.getElementById('createPassword').value);
+      formData.append('firstName', document.getElementById('createFirstName').value);
+      formData.append('lastName', document.getElementById('createLastName').value);
+
+      const imgProfile = document.getElementById('createImgProfile').files[0];
+      if (imgProfile) formData.append('imgProfile', imgProfile);
+
+      try {
+        const response = await fetch('http://localhost:3000/api/users', {
+          method: 'POST',
+          body: formData,
+        });
+        const result = await response.json();
+        document.getElementById('createResult').innerText = JSON.stringify(result);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+
+    // Función para obtener todos los usuarios
+    async function getAllUsers() {
+      try {
+        const response = await fetch('http://localhost:3000/api/users');
+        const users = await response.json();
+        document.getElementById('usersList').innerText = JSON.stringify(users, null, 2);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Función para actualizar un usuario
+    document.getElementById('updateUserForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const userId = document.getElementById('updateUserId').value;
+      const formData = new FormData();
+      formData.append('email', document.getElementById('updateEmail').value);
+      formData.append('firstName', document.getElementById('updateFirstName').value);
+      formData.append('lastName', document.getElementById('updateLastName').value);
+
+      const imgProfile = document.getElementById('updateImgProfile').files[0];
+      if (imgProfile) formData.append('imgProfile', imgProfile);
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
+          method: 'PATCH',
+          body: formData,
+        });
+        const result = await response.json();
+        document.getElementById('updateResult').innerText = JSON.stringify(result);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+
+    // Función para eliminar un usuario
+    document.getElementById('deleteUserForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const userId = document.getElementById('deleteUserId').value;
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        document.getElementById('deleteResult').innerText = JSON.stringify(result);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+  </script>
+</body>
+</html>

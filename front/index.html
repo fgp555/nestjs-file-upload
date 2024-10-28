@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Files</title>
+</head>
+<body>
+  <h1>Upload Files</h1>
+  
+  <form id="uploadForm">
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" required>
+    
+    <label for="files">Select files:</label>
+    <input type="file" id="files" name="files" multiple required>
+    
+    <button type="submit">Upload</button>
+  </form>
+  
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const description = document.getElementById('description').value;
+      const filesInput = document.getElementById('files');
+      const files = filesInput.files;
+      
+      const formData = new FormData();
+      formData.append('description', description);
+
+      // Append each file to formData
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+      }
+      
+      try {
+        const response = await fetch('http://localhost:3000/api/files/upload', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          document.getElementById('result').innerText = `Upload successful: ${JSON.stringify(result)}`;
+        } else {
+          document.getElementById('result').innerText = `Upload failed: ${response.statusText}`;
+        }
+      } catch (error) {
+        document.getElementById('result').innerText = `Error: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>

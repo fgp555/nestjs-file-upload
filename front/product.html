@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product CRUD</title>
+</head>
+<body>
+  <h1>Product CRUD</h1>
+
+  <!-- Formulario para crear un producto -->
+  <h2>Create Product</h2>
+  <form id="createProductForm">
+    <label for="title">Title:</label>
+    <input type="text" id="createTitle" required>
+
+    <label for="description">Description:</label>
+    <input type="text" id="createDescription" required>
+
+    <label for="price">Price:</label>
+    <input type="number" step="0.01" id="createPrice" required>
+
+    <label for="images">Select Images:</label>
+    <input type="file" id="createImages" multiple>
+
+    <button type="submit">Create Product</button>
+  </form>
+  <div id="createResult"></div>
+
+  <!-- Botón para obtener todos los productos -->
+  <h2>Get All Products</h2>
+  <button onclick="getAllProducts()">Fetch Products</button>
+  <div id="productsList"></div>
+
+  <!-- Formulario para actualizar un producto -->
+  <h2>Update Product</h2>
+  <form id="updateProductForm">
+    <label for="productId">Product ID:</label>
+    <input type="number" id="updateProductId" required>
+
+    <label for="title">Title:</label>
+    <input type="text" id="updateTitle">
+
+    <label for="description">Description:</label>
+    <input type="text" id="updateDescription">
+
+    <label for="price">Price:</label>
+    <input type="number" step="0.01" id="updatePrice">
+
+    <label for="images">Select New Images:</label>
+    <input type="file" id="updateImages" multiple>
+
+    <button type="submit">Update Product</button>
+  </form>
+  <div id="updateResult"></div>
+
+  <!-- Formulario para eliminar un producto -->
+  <h2>Delete Product</h2>
+  <form id="deleteProductForm">
+    <label for="deleteProductId">Product ID:</label>
+    <input type="number" id="deleteProductId" required>
+
+    <button type="submit">Delete Product</button>
+  </form>
+  <div id="deleteResult"></div>
+
+  <script>
+    // Función para crear un producto
+    document.getElementById('createProductForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const formData = new FormData();
+      formData.append('title', document.getElementById('createTitle').value);
+      formData.append('description', document.getElementById('createDescription').value);
+      formData.append('price', document.getElementById('createPrice').value);
+
+      const files = document.getElementById('createImages').files;
+      for (let file of files) {
+        formData.append('files', file);
+      }
+
+      try {
+        const response = await fetch('http://localhost:3000/api/products', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+        document.getElementById('createResult').innerText = JSON.stringify(result);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+
+    // Función para obtener todos los productos
+    async function getAllProducts() {
+      try {
+        const response = await fetch('http://localhost:3000/api/products');
+        const products = await response.json();
+        document.getElementById('productsList').innerText = JSON.stringify(products, null, 2);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Función para actualizar un producto
+    document.getElementById('updateProductForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const productId = document.getElementById('updateProductId').value;
+      const formData = new FormData();
+      formData.append('title', document.getElementById('updateTitle').value);
+      formData.append('description', document.getElementById('updateDescription').value);
+      formData.append('price', document.getElementById('updatePrice').value);
+
+      const files = document.getElementById('updateImages').files;
+      for (let file of files) {
+        formData.append('files', file);
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
+          method: 'PATCH',
+          body: formData
+        });
+        const result = await response.json();
+        document.getElementById('updateResult').innerText = JSON.stringify(result);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+
+    // Función para eliminar un producto
+    document.getElementById('deleteProductForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const productId = document.getElementById('deleteProductId').value;
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
+          method: 'DELETE'
+        });
+        const result = await response.json();
+        document.getElementById('deleteResult').innerText = JSON.stringify(result);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+  </script>
+</body>
+</html>
