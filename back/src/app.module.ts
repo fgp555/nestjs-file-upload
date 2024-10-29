@@ -7,6 +7,7 @@ import typeOrmConfig from './config/typeorm';
 import { UserModule } from './user/user.module';
 import { SeederModule } from './seeder/seeder.module';
 import { ProductModule } from './product/product.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProductModule } from './product/product.module';
     UserModule,
     SeederModule,
     ProductModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
